@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(gbplanner)
 
-add_definitions(-std=c++14 -Wall -Wno-sign-compare -Wno-catch-value -Wno-switch -Wno-maybe-uninitialized -Werror=return-type)
+add_definitions(-std=c++14 -Wall -Wno-sign-compare -Wno-catch-value -Wno-switch -Wno-maybe-uninitialized)
 
 find_package(catkin_simple REQUIRED)
 find_package(Boost REQUIRED)

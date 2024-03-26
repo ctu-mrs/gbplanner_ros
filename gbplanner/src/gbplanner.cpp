@@ -11,7 +11,9 @@ Gbplanner::Gbplanner(const ros::NodeHandle& nh,
 
   rrg_ = new Rrg(nh, nh_private);
   if (!(rrg_->loadParams(false))) {
-    ROS_ERROR_COND(global_verbosity >= Verbosity::ERROR, "Could not load all required parameters. Shutdown ROS node.");
+    ROS_ERROR_COND(
+        global_verbosity >= Verbosity::ERROR,
+        "Could not load all required parameters. Shutdown ROS node.");
     ros::shutdown();
   }
 
@@ -23,12 +25,13 @@ Gbplanner::Gbplanner(const ros::NodeHandle& nh,
                      MapManagerVoxblox<MapManagerVoxbloxServer,
                                        MapManagerVoxbloxVoxel>* map_manager)
     : nh_(nh), nh_private_(nh_private) {
-  
   planner_status_ = Gbplanner::PlannerStatus::NOT_READY;
   rrg_ = new Rrg(nh, nh_private, map_manager);
 
   if (!(rrg_->loadParams(true))) {
-    ROS_ERROR_COND(global_verbosity >= Verbosity::ERROR, "Could not load all required parameters. Shutdown ROS node.");
+    ROS_ERROR_COND(
+        global_verbosity >= Verbosity::ERROR,
+        "Could not load all required parameters. Shutdown ROS node.");
     ros::shutdown();
   }
 
@@ -97,12 +100,14 @@ bool Gbplanner::plannerEnableUntraversablePolygonSubscriberCallback(
     std_srvs::SetBool::Request& request,
     std_srvs::SetBool::Response& response) {
   if (static_cast<bool>(request.data)) {
-    ROS_INFO_COND(global_verbosity >= Verbosity::INFO, "Gbplanner checks traversability");
+    ROS_INFO_COND(global_verbosity >= Verbosity::INFO,
+                  "Gbplanner checks traversability");
     untraversable_polygon_subscriber_ =
         nh_.subscribe("/traversability_estimation/untraversable_polygon", 100,
                       &Gbplanner::untraversablePolygonCallback, this);
   } else {
-    ROS_INFO_COND(global_verbosity >= Verbosity::INFO, "Gbplanner stops checking traversability");
+    ROS_INFO_COND(global_verbosity >= Verbosity::INFO,
+                  "Gbplanner stops checking traversability");
     untraversable_polygon_subscriber_.shutdown();
   }
   response.success = static_cast<unsigned char>(true);
@@ -138,9 +143,11 @@ bool Gbplanner::setGlobalBound(
 bool Gbplanner::setDynamicGlobalBound(
     planner_msgs::planner_dynamic_global_bound::Request& req,
     planner_msgs::planner_dynamic_global_bound::Response& res) {
-  ROS_INFO_COND(global_verbosity >= Verbosity::INFO, "Calling RRG set dynamic global bound");
+  ROS_INFO_COND(global_verbosity >= Verbosity::INFO,
+                "Calling RRG set dynamic global bound");
   res.success = rrg_->setGlobalBound(req);
-  ROS_INFO_COND(global_verbosity >= Verbosity::INFO, "RRG set dynamic global bound returned");
+  ROS_INFO_COND(global_verbosity >= Verbosity::INFO,
+                "RRG set dynamic global bound returned");
 
   return true;
 }
@@ -172,62 +179,89 @@ bool Gbplanner::passingGateCallback(
 bool Gbplanner::plannerServiceCallback(
     planner_msgs::planner_srv::Request& req,
     planner_msgs::planner_srv::Response& res) {
+  ROS_INFO("entering planner service callback now");
+  ROS_INFO("request header frame id: %s", req.header.frame_id.c_str());
   // Extract setting from the request.
   rrg_->setGlobalFrame(req.header.frame_id);
   rrg_->setBoundMode(static_cast<BoundModeType>(req.bound_mode));
   rrg_->setRootStateForPlanning(req.root_pose);
 
+  ROS_INFO("set some stuff");
+  ROS_INFO("root pose: %.2f, %.2f, %.2f", req.root_pose.position.x,
+           req.root_pose.position.y, req.root_pose.position.z);
   // Start the planner.
   res.path.clear();
   if (getPlannerStatus() == Gbplanner::PlannerStatus::NOT_READY) {
-    ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "The planner is not ready.");
+    ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                  "The planner is not ready.");
     return false;
   }
 
+  ROS_INFO("resetting rrg");
   rrg_->reset();
+  ROS_INFO("building graph");
   Rrg::GraphStatus status = rrg_->buildGraph();
+  ROS_INFO("done building graph");
   switch (status) {
     case Rrg::GraphStatus::OK:
+    ROS_INFO("GRAPH OK!");
       break;
     case Rrg::GraphStatus::ERR_KDTREE:
-      ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "[PLANNER_ERROR] An issue occurred with kdtree data.");
+      ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                    "[PLANNER_ERROR] An issue occurred with kdtree data.");
       break;
     case Rrg::GraphStatus::ERR_NO_FEASIBLE_PATH:
-      ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "[PLANNER_ERROR] No feasible path was found.");
+      ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                    "[PLANNER_ERROR] No feasible path was found.");
       break;
     case Rrg::GraphStatus::NOT_OK:
-      ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "[GBPLANNER] Resending global path");
+      ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                    "[GBPLANNER] Resending global path");
       res.path = rrg_->reRunGlobalPlanner();
       break;
     default:
-      ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "[PLANNER_ERROR] Error occurred in building graph.");
+      ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                    "[PLANNER_ERROR] Error occurred in building graph.");
       break;
   }
 
   bool global_planner_trig = false;
   if (status == Rrg::GraphStatus::OK) {
+    ROS_INFO("GRAPHSTATUS OK, EVALUATING GRAPH!");
     status = rrg_->evaluateGraph();
+    ROS_INFO("Done evaluating graph!");
     switch (status) {
       case Rrg::GraphStatus::OK:
+      ROS_INFO("evaluating graph successful!");
         break;
       case Rrg::GraphStatus::NO_GAIN:
-        ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "[PLANNER_ERROR] No positive gain was found.");
+        ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                      "[PLANNER_ERROR] No positive gain was found.");
         break;
       case Rrg::GraphStatus::NOT_OK:
-        ROS_WARN_COND(global_verbosity >= Verbosity::PLANNER_STATUS, "[GBPLANNER] Very low local gain. Triggering global planner");
+        ROS_WARN_COND(
+            global_verbosity >= Verbosity::PLANNER_STATUS,
+            "[GBPLANNER] Very low local gain. Triggering global planner");
         res.path = rrg_->runGlobalPlanner(0, false, false);
         res.status = planner_msgs::planner_srv::Response::kRepositioning;
         break;
       default:
-        ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "[PLANNER_ERROR] Error occurred in gain calculation.");
+        ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                      "[PLANNER_ERROR] Error occurred in gain calculation.");
         break;
     }
   }
+
+  ROS_INFO("checking global_planner_trig");
   if (global_planner_trig) return true;
+  ROS_INFO("was not global planner trig");
 
   if (status == Rrg::GraphStatus::OK) {
+    ROS_INFO("GETTING BEST PATH");
     res.path = rrg_->getBestPath(req.header.frame_id, res.status);
+    ROS_INFO("DOne getting best path");
   }
+  ROS_INFO("Getting to end of service call");
   return true;
 }
 
@@ -236,7 +270,8 @@ bool Gbplanner::homingServiceCallback(
     planner_msgs::planner_homing::Response& res) {
   res.path.clear();
   if (getPlannerStatus() == Gbplanner::PlannerStatus::NOT_READY) {
-    ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "The planner is not ready.");
+    ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                  "The planner is not ready.");
     return false;
   }
   res.path = rrg_->getHomingPath(req.header.frame_id);
@@ -248,7 +283,8 @@ bool Gbplanner::globalPlannerServiceCallback(
     planner_msgs::planner_global::Response& res) {
   res.path.clear();
   if (getPlannerStatus() == Gbplanner::PlannerStatus::NOT_READY) {
-    ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "The planner is not ready.");
+    ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                  "The planner is not ready.");
     return false;
   }
   res.path =
@@ -260,7 +296,8 @@ bool Gbplanner::setHomingPosServiceCallback(
     planner_msgs::planner_set_homing_pos::Request& req,
     planner_msgs::planner_set_homing_pos::Response& res) {
   if (getPlannerStatus() == Gbplanner::PlannerStatus::NOT_READY) {
-    ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "The planner is not ready.");
+    ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                  "The planner is not ready.");
     return false;
   }
   res.success = rrg_->setHomingPos();
@@ -291,7 +328,8 @@ bool Gbplanner::plannerSetPlanningTriggerModeCallback(
 
 bool Gbplanner::clearUntraversableZones(std_srvs::Trigger::Request& req,
                                         std_srvs::Trigger::Response& res) {
-  ROS_INFO_COND(global_verbosity >= Verbosity::INFO, "Clearing untraversable zones");
+  ROS_INFO_COND(global_verbosity >= Verbosity::INFO,
+                "Clearing untraversable zones");
   rrg_->clearUntraversableZones();
   res.success = true;
   return true;
@@ -301,7 +339,8 @@ void Gbplanner::untraversablePolygonCallback(
     const geometry_msgs::PolygonStamped& polygon_msgs) {
   // Add the new polygon into geofence list
   if (!polygon_msgs.polygon.points.empty()) {
-    ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "Detected untraversable area");
+    ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                  "Detected untraversable area");
     // Add this to the list
     rrg_->addGeofenceAreas(polygon_msgs);
   }
@@ -312,7 +351,8 @@ void Gbplanner::setUntraversablePolygon(
   std::cout << "Untraversable polygon size: "
             << polygon_msgs.polygon.points.size() << std::endl;
   if (!polygon_msgs.polygon.points.empty()) {
-    ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "Detected untraversable area");
+    ROS_WARN_COND(global_verbosity >= Verbosity::WARN,
+                  "Detected untraversable area");
     // Add this to the list
     rrg_->addGeofenceAreas(polygon_msgs);
   }

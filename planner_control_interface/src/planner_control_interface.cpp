@@ -415,6 +415,7 @@ bool PlannerControlInterface::triggerCallback(
                     "Switch to auto mode.");
       trigger_mode_ = PlannerTriggerModeType::kAuto;
     }
+    ROS_INFO("setting velocity to %.2f", req.vel_max);
     pci_manager_->setVelocity(req.vel_max);
     bound_mode_ = req.bound_mode;
     run_en_ = true;
@@ -701,7 +702,10 @@ void PlannerControlInterface::runPlanner(bool exe_path = false) {
     planning_mode_srv.request.planning_mode =
         planner_msgs::planner_set_planning_mode::Request::kManual;
   }
+
+  ROS_INFO("calling planner_set_trigger_mode_client_");
   planner_set_trigger_mode_client_.call(planning_mode_srv);
+  ROS_INFO("done calling planner_set_trigger_mode_client_");
 
   for (int ind = 0; ind < kBBoxLevel; ++ind) {
     ros::Duration(0.01)
@@ -718,6 +722,7 @@ void PlannerControlInterface::runPlanner(bool exe_path = false) {
     plan_srv.request.header.frame_id = world_frame_id_;
     plan_srv.request.bound_mode = bound_mode_;
     plan_srv.request.root_pose = getPoseToStart();
+    
     if (planner_client_.call(plan_srv)) {
       if (!plan_srv.response.path.empty()) {
         // Execute path.

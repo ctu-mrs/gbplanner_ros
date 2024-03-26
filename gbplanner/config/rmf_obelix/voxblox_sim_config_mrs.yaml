@@ -1,4 +1,5 @@
-world_frame: world
+# world_frame: world
+world_frame: uav1/fixed_origin
 use_tf_transforms: True
 use_freespace_pointcloud: True
 tsdf_voxels_per_side: 16
@@ -9,7 +10,7 @@ voxel_carving_enabled: True
 use_sparsity_compensation_factor: True
 sparsity_compensation_factor: 100.0 #10.0
 color_mode: "colors"
-verbose: True
+verbose: False
 update_mesh_every_n_sec: 1.0
 mesh_min_weight: 1e-4
 slice_level: 1.0
