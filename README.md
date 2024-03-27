@@ -1,3 +1,10 @@
+# CTU UVA Mapping (for integration) put into same workspace as simulator packages
+```bash
+git clone https://github.com/ctu-mrs/pci_general
+git clone https://github.com/ntnu-arl/adaptive_obb_ros
+git clone https://github.com/ctu-mrs/gbplanner_ros
+```
+
 # Graph-based Exploration Planner 2.0
 ![swag](img/cerberus_subt_winners.png)
 
