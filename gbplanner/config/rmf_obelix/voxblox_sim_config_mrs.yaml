@@ -9,7 +9,7 @@ truncation_distance: 0.6 #1.0
 voxel_carving_enabled: True
 use_sparsity_compensation_factor: True
 sparsity_compensation_factor: 100.0 #10.0
-color_mode: "colors"
+color_mode: "normals"
 verbose: False
 update_mesh_every_n_sec: 1.0
 mesh_min_weight: 1e-4
@@ -17,14 +17,14 @@ slice_level: 1.0
 method: "fast"
 integration_order_mode: "sorted"
 max_consecutive_ray_collisions: 0
-publish_slices: False
+publish_slices: True
 publish_pointclouds: True
 allow_clear: True
 pointcloud_queue_size: 1000
 min_time_between_msgs_sec: 0.0
 #max_block_distance_from_body: FLT_MAX
 publish_tsdf_info: False
-publish_slices: False
+publish_slices: True
 publish_traversable: True ###False
 traversability_radius: 0.4 #0.4 ###1.5
 enable_icp: False
