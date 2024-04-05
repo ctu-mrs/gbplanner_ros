@@ -190,3 +190,4 @@ AdaptiveObbParams:
   type: kPca
   local_pointcloud_range: 50.0
   bounding_box_size_max: 35
+  

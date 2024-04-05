@@ -127,7 +127,7 @@ PlannerControlInterface::PlannerControlInterface(
       "semantic_location", 10);
 
   nav_goal_sub_ =
-      nh_.subscribe("/move_base_simple/goal", 1,
+      nh_.subscribe("/move_base_simple/goal2", 1,
                     &PlannerControlInterface::navGoalCallback, this);
   pose_goal_sub_ =
       nh_.subscribe("/global_planner/waypoint_request", 1,
@@ -170,6 +170,7 @@ void PlannerControlInterface::navGoalCallback(
   geometry_msgs::PoseStamped posest;
   posest.header = nav_msgs.header;
   posest.pose = nav_msgs.pose;
+  // posest.pose.position.z = 1.0; //Added this line to set the height of the waypoint to 1.0 - LB
   setGoal(posest);
 }
 
@@ -191,9 +192,8 @@ void PlannerControlInterface::setGoal(const geometry_msgs::PoseStamped& pose) {
   pout.stamp_ = darpa_to_world_transform.stamp_;
   pout.frame_id_ = world_frame_id_;
   poseStampedTFToMsg(pout, pose_in_world_frame);
-
   received_first_waypoint_to_go_ = true;
-  go_to_waypoint_with_checking_ = true;
+  go_to_waypoint_with_checking_ = true; //I CHANGED THIS HERE: I SET IT TO FALSE - LB
   set_waypoint_stamped_ = pose_in_world_frame;
   ROS_INFO_COND(
       global_verbosity >= Verbosity::INFO,
@@ -246,7 +246,7 @@ bool PlannerControlInterface::rotate180DegCallback(
   planner_set_trigger_mode_client_.call(planning_mode_srv);
 
   go_to_waypoint_request_ = true;
-  go_to_waypoint_with_checking_ = false;
+  go_to_waypoint_with_checking_ = true;
   set_waypoint_.position.x = current_pose_.position.x;
   set_waypoint_.position.y = current_pose_.position.y;
   set_waypoint_.position.z = current_pose_.position.z;
@@ -266,7 +266,7 @@ bool PlannerControlInterface::goToWaypointCallback(
   planner_set_trigger_mode_client_.call(planning_mode_srv);
 
   go_to_waypoint_request_ = true;
-  go_to_waypoint_with_checking_ = false;
+  go_to_waypoint_with_checking_ = true;
   set_waypoint_.position.x = req.waypoint.position.x;
   set_waypoint_.position.y = req.waypoint.position.y;
   set_waypoint_.position.z = req.waypoint.position.z;
@@ -449,7 +449,7 @@ bool PlannerControlInterface::stdSrvGoToWaypointCallback(
 
   if (received_first_waypoint_to_go_) {
     go_to_waypoint_request_ = true;
-    go_to_waypoint_with_checking_ = true;
+    go_to_waypoint_with_checking_ = true; //I CHANGED THIS HERE: I SET IT TO FALSE - LB
     res.success = true;
   } else {
     ROS_ERROR_COND(
@@ -535,6 +535,7 @@ void PlannerControlInterface::run() {
   bool cont = true;
   while (cont) {
     PCIManager::PCIStatus pci_status = pci_manager_->getStatus();
+    // ROS_INFO("PCI status: %d (kRunning is %d)", pci_status, PCIManager::PCIStatus::kRunning);
     // TODO: Fix by prioritizing and sequencing exclusive cases (with bad
     // if/else and flags approach)
     if (pci_status == PCIManager::PCIStatus::kReady) {
@@ -620,6 +621,7 @@ void PlannerControlInterface::runGlobalRepositioning() {
       current_path_.clear();
       // resetPlanner();
       std::vector<geometry_msgs::Pose> path_to_be_exe;
+      ROS_WARN("Executing path, LB got here");
       pci_manager_->executePath(planner_srv.response.path, path_to_be_exe,
                                 PCIManager::ExecutionPathType::kGlobalPath);
       current_path_ = path_to_be_exe;
