@@ -63,12 +63,8 @@
   <node pkg="gbplanner" type="gbplanner_node" name="gbplanner_node" output="screen" launch-prefix="$(arg launch_prefix)">
     <remap from="odometry" to="$(arg odometry_topic)" />
     <remap from="/pointcloud" to="/$(arg robot_name)/point_cloud_manager/transformed_pointcloud_out" />
-    <!-- <remap from="/pointcloud" to="/$(arg robot_name)/voxblox_node/tsdf_pointcloud" /> -->
-    <!-- <remap from="/gbplanner_node/tsdf_map_in" to="/$(arg robot_name)/voxblox_node/tsdf_map_out" /> -->
     <rosparam command="load" file="$(arg gbplanner_config_file)" />
     <rosparam command="load" file="$(arg map_config_file)" />
-
-    <remap from="/move_base_simple/goal" to="/gbplanner/wpt_goal" />
   </node>
 
   <!-- Planner and Control Interface -->
@@ -77,7 +73,6 @@
     <remap from="planner_server" to="gbplanner" />
     <remap from="planner_homing_server" to="gbplanner/homing" />
     <remap from="odometry" to="$(arg odometry_topic)"/>
-    <remap from="/move_base_simple/goal" to="/gbplanner/wpt_goal" />
     <rosparam command="load" file="$(arg pci_file)" />
   </node>
 
