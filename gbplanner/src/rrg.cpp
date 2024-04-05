@@ -3307,6 +3307,8 @@ std::vector<geometry_msgs::Pose> Rrg::getGlobalPath(
   wp << waypoint.pose.position.x, waypoint.pose.position.y,
       waypoint.pose.position.z;
 
+  ROS_INFO("waypoint is: %.2f, %.2f, %.2f", wp[0], wp[1], wp[2]);
+
   Vertex* wp_nearest_vertex;
   if (!global_graph_->getNearestVertex(&wp, &wp_nearest_vertex)) {
     ROS_WARN_COND(global_verbosity >= Verbosity::WARN, "Cannot find any nearby vertex to reposition.");

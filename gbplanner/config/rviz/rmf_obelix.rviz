@@ -17,6 +17,7 @@ Panels:
         - /PlannerViz1/ShortestPathsClustering1/Namespaces1
         - /Sensors1/VLP1/Autocompute Value Bounds1
         - /Voxblox1
+        - /Voxblox1/SurfacePCL1
         - /CommandTraj1
       Splitter Ratio: 0.5
     Tree Height: 579
@@ -341,8 +342,8 @@ Visualization Manager:
         - Alpha: 0.800000011920929
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 1.2027051448822021
-            Min Value: -1.4022537469863892
+            Max Value: 2.328705310821533
+            Min Value: -2.2685039043426514
             Value: true
           Axis: Z
           Channel Name: intensity
@@ -358,7 +359,7 @@ Visualization Manager:
           Position Transformer: XYZ
           Queue Size: 10
           Selectable: true
-          Size (Pixels): 1
+          Size (Pixels): 3
           Size (m): 0.009999999776482582
           Style: Points
           Topic: /gbplanner_node/surface_pointcloud
@@ -404,7 +405,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 6.248211860656738
+      Distance: 21.734716415405273
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -420,9 +421,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3047962486743927
+      Pitch: 1.1897962093353271
       Target Frame: rmf_obelix/base_link
-      Yaw: 2.5203874111175537
+      Yaw: 3.8703880310058594
     Saved: ~
 Window Geometry:
   Displays:

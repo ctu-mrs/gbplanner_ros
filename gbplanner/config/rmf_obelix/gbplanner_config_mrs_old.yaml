@@ -1,11 +1,11 @@
-  # Configurations for the exploration pipeline.
+# Configurations for the exploration pipeline.
   # For more details, please check comments in the params.h file and the wiki.
   #-------------------------------------------------------------------------------
   # ROBOT CONFIGURATION
   #-------------------------------------------------------------------------------
 RobotParams:
   type:               kAerialRobot
-  size:               [0.6, 0.6, 0.6] # Actual size of the robot in meters [x, y, z]
+  size:               [0.4, 0.4, 0.4] # Actual size of the robot in meters [x, y, z]
   size_extension_min: [0.2, 0.2, 0.2] # minimum extension outside of robot size allowed to operate
   size_extension:     [0.2, 0.2, 0.2] # maximum extension outside of the robot size
   center_offset:      [0.0, 0.0, 0.0]
@@ -19,6 +19,15 @@ RobotParams:
 #             all follows ROS convention (X-forward, Y-left, Z-Up).
 #-------------------------------------------------------------------------------
 SensorParams:
+  # sensor_list:      ["OS064"]
+  # OS064:
+  #   type:           kLidar
+  #   max_range:      3.0
+  #   center_offset:  [0.0, 0.0, 0.0]
+  #   rotations:      [0.0, 0.0, 0.0]
+  #   fov:            [rad(2*pi), rad(pi/2)]
+  #   resolution:     [rad(7.0*pi/180), rad(7.0*pi/180)]
+  #   frontier_percentage_threshold: 0.04
   sensor_list:      ["pico_front", "pico_left", "pico_right"]
   pico_front:
     type:           kLidar
@@ -44,14 +53,7 @@ SensorParams:
     fov:            [rad(1.86), rad(1.50)]
     resolution:     [rad(1.86/200), rad(1.50/100)]
     frontier_percentage_threshold: 0.04
-  #OS064:
-  #  type:           kLidar
-  #  max_range:      4.0
-  #  center_offset:  [0.0, 0.0, 0.0]
-  #  rotations:      [0.0, 0.0, 0.0]
-  #  fov:            [rad(2*pi), rad(pi/2)]
-  #  resolution:     [rad(7.0*pi/180), rad(7.0*pi/180)]
-  #  frontier_percentage_threshold: 0.04
+
 #-------------------------------------------------------------------------------
 # SAMPLING SPACE CONFIGURATION
 #   Global: Strictly defined bounds for the whole environment.
@@ -140,16 +142,16 @@ RandomSamplerParams:
 PlanningParams:
   type:             kBasicExploration #kAdaptiveExploration, kBasicExploration
   rr_mode:          kGraph
-  exp_sensor_list:  ["pico_front", "pico_left","pico_right"]
+  exp_sensor_list:  ["OS064"]
   # no_gain_zones_list: ["g1"]
-  v_max:            0.25 # max velocity m/s
-  v_homing_max:     0.25 # max velocity m/s
-  yaw_rate_max:     0.5 # max angular velocity rad/s
+  v_max:            0.8 # max velocity m/s
+  v_homing_max:     0.8 # max velocity m/s
+  yaw_rate_max:     0.3 # max angular velocity rad/s
   yaw_tangent_correction: true # If true - all headings will be along the path segment
   edge_length_min:  0.2
   edge_length_max:  2.0
   edge_overshoot:   0.0 # m - Account for possible tracking error by collision checking on an extended edge
-  num_vertices_max: 140 # graph building stops if these many vertices are added 
+  num_vertices_max: 70 # graph building stops if these many vertices are added 
   num_edges_max:    900 # graph building stops if these many edges are added
   num_loops_cutoff: 200 # Maximum iterations in which no vertices or edges are added to the graph
   num_loops_max:    400 # Maximum iterations possible for graph building
@@ -163,7 +165,7 @@ PlanningParams:
   path_length_penalty: 0.04
   path_direction_penalty: 0.1
   occupied_voxel_gain: 0.0
-  free_voxel_gain:  0.0 # prefer directions towards more free voxels in case of the dead-end
+  free_voxel_gain:  0.1 # prefer directions towards more free voxels in case of the dead-end
   unknown_voxel_gain: 60.0
 
   traverse_length_max: 8.0 # Maximum length of the best path will be truncated to for actual traversal
@@ -177,14 +179,14 @@ PlanningParams:
   clustering_radius: 0.5
   path_interpolation_distance: 0.5
   
-  time_budget_limit: 1200 # seconds
+  time_budget_limit: 480 # seconds
   auto_homing_enable: true
   go_home_if_fully_explored: true
 
   nonuniform_ray_cast: true
   ray_cast_step_size_multiplier: 1.0
 
-  geofence_checking_enable: true
+  geofence_checking_enable: false
 
 AdaptiveObbParams:
   type: kPca
