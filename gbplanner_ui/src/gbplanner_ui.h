@@ -5,6 +5,7 @@
 
 #include <planner_msgs/pci_global.h>
 #include <planner_msgs/pci_initialization.h>
+#include <planner_msgs/planner_string_trigger.h>
 #include <ros/ros.h>
 #include <std_msgs/ColorRGBA.h>
 #include <std_srvs/Empty.h>
@@ -39,10 +40,16 @@ class gbplanner_panel : public rviz::Panel {
   void on_init_motion_click();
   void on_plan_to_waypoint_click();
   void on_global_planner_click();
+  void on_save_voxgraph_click();
+  void on_save_voxblox_click();
+  void on_load_voxblox_click();
  protected Q_SLOTS:
 
  protected:
   std::string uav_name_;
+  std::string voxblox_save_path_;
+  std::string voxgraph_save_path_;
+  std::string planning_graph_save_path_;
 
  protected:
   QPushButton* button_start_planner;
@@ -64,7 +71,20 @@ class gbplanner_panel : public rviz::Panel {
   QLineEdit* global_id_line_edit;
   ros::ServiceClient planner_client_global_planner;
 
+  QPushButton* button_save_voxgraph;
+  ros::ServiceClient planner_client_save_voxgraph;
+
+  QPushButton* button_save_voxblox;
+  ros::ServiceClient planner_client_save_voxblox;
+  ros::ServiceClient planner_client_save_planning_graph;
+
+  QPushButton* button_load_voxblox;
+  ros::ServiceClient planner_client_load_voxblox_graph;
+  ros::ServiceClient planner_client_load_planning_graph;
+
   ros::NodeHandle nh;
+
+  const std::string currentDateTime();
 };
 
 }  // namespace gbplanner_ui
