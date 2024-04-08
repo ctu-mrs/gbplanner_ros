@@ -100,7 +100,7 @@ gbplanner_panel::gbplanner_panel(QWidget* parent) : rviz::Panel(parent) {
 void gbplanner_panel::on_save_voxgraph_click() {
   voxblox_msgs::FilePath srv;
   const std::string current_time = currentDateTime();
-  srv.request.file_path = voxgraph_save_path_ + "/voxgraph-" + current_time + ".ply";
+  srv.request.file_path = voxgraph_save_path_ + "/button_voxgraph_" + current_time + ".ply";
   ROS_INFO("[GBPLANNER-UI] Saving Voxgraph to file: %s", srv.request.file_path.c_str());
 
   if (!planner_client_save_voxgraph.call(srv)) {
@@ -115,8 +115,8 @@ void gbplanner_panel::on_save_voxblox_click() {
   const std::string current_time = currentDateTime();
 
   std::string file_paths[2];
-  file_paths[0] = voxblox_save_path_ + "/voxblox-" + current_time + ".vxblx";
-  file_paths[1] = planning_graph_save_path_ + "/latest_voxblox.vxblx";
+  file_paths[0] = voxblox_save_path_ + "/button_voxblox_" + current_time + ".vxblx";
+  file_paths[1] = planning_graph_save_path_ + "/button_voxblox_latest.vxblx";
 
   for(std::string fname : file_paths){
     srv.request.file_path = fname;
@@ -129,8 +129,8 @@ void gbplanner_panel::on_save_voxblox_click() {
     }
   }
 
-  file_paths[0] = planning_graph_save_path_ + "/global_planning-" + current_time + ".graph";
-  file_paths[1] = planning_graph_save_path_ + "/latest_global_planning.graph";
+  file_paths[0] = planning_graph_save_path_ + "/button_global_planning_" + current_time + ".graph";
+  file_paths[1] = planning_graph_save_path_ + "/button_global_planning_latest.graph";
 
   planner_msgs::planner_string_trigger srv_graph;
   for(std::string fname : file_paths){
@@ -149,7 +149,7 @@ void gbplanner_panel::on_save_voxblox_click() {
 
 void gbplanner_panel::on_load_voxblox_click() {
   voxblox_msgs::FilePath srv;
-  srv.request.file_path = voxblox_save_path_ + "/latest_voxblox.vxblx";
+  srv.request.file_path = voxblox_save_path_ + "/button_voxblox_latest.vxblx";
   ROS_INFO("[GBPLANNER-UI] Loading Voxblox from file: %s", srv.request.file_path.c_str());
 
   if (!planner_client_load_voxblox_graph.call(srv)) {
@@ -159,7 +159,7 @@ void gbplanner_panel::on_load_voxblox_click() {
   }
 
   planner_msgs::planner_string_trigger srv_graph;
-  srv_graph.request.message = planning_graph_save_path_ + "/latest_global_planning.graph";
+  srv_graph.request.message = planning_graph_save_path_ + "/button_global_planning_latest.graph";
   if (!planner_client_load_planning_graph.call(srv_graph)) {
     ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_load_planning_graph.getService().c_str());
   } else{
@@ -260,7 +260,7 @@ const std::string gbplanner_panel::currentDateTime() {
     tstruct = *localtime(&now);
     // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
     // for more information about date/time format
-    strftime(buf, sizeof(buf), "%Y_%m_%d_%H-%M-%S", &tstruct);
+    strftime(buf, sizeof(buf), "%H_%M_%S", &tstruct);
 
     return buf;
 }
