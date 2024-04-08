@@ -159,6 +159,8 @@ void gbplanner_panel::on_start_planner_click() {
   std_srvs::Trigger srv;
   if (!planner_client_start_planner.call(srv)) {
     ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_start_planner.getService().c_str());
+  }else{
+    ROS_INFO("[GBPLANNER-UI] Service call successful: %s", planner_client_start_planner.getService().c_str());
   }
 }
 
@@ -166,6 +168,8 @@ void gbplanner_panel::on_stop_planner_click() {
   std_srvs::Trigger srv;
   if (!planner_client_stop_planner.call(srv)) {
     ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_stop_planner.getService().c_str());
+  }else{
+    ROS_INFO("[GBPLANNER-UI] Service call successful: %s", planner_client_stop_planner.getService().c_str());
   }
 }
 
@@ -173,6 +177,8 @@ void gbplanner_panel::on_homing_click() {
   std_srvs::Trigger srv;
   if (!planner_client_homing.call(srv)) {
     ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_homing.getService().c_str());
+  }else{
+    ROS_INFO("[GBPLANNER-UI] Service call successful: %s", planner_client_homing.getService().c_str());
   }
 }
 
@@ -180,6 +186,8 @@ void gbplanner_panel::on_init_motion_click() {
   planner_msgs::pci_initialization srv;
   if (!planner_client_init_motion.call(srv)) {
     ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_init_motion.getService().c_str());
+  }else{
+    ROS_INFO("[GBPLANNER-UI] Service call successful: %s", planner_client_init_motion.getService().c_str());
   }
 }
 
@@ -187,6 +195,8 @@ void gbplanner_panel::on_plan_to_waypoint_click() {
   std_srvs::Trigger srv;
   if (!planner_client_plan_to_waypoint.call(srv)) {
     ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_plan_to_waypoint.getService().c_str());
+  }else{
+    ROS_INFO("[GBPLANNER-UI] Service call successful: %s", planner_client_plan_to_waypoint.getService().c_str());
   }
 }
 
@@ -221,6 +231,8 @@ void gbplanner_panel::on_global_planner_click() {
   plan_srv.request.id = id;
   if (!planner_client_global_planner.call(plan_srv)) {
     ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_global_planner.getService().c_str());
+  }else{
+    ROS_INFO("[GBPLANNER-UI] Service call successful: %s", planner_client_global_planner.getService().c_str());
   }
 }
 void gbplanner_panel::save(rviz::Config config) const { rviz::Panel::save(config); }
