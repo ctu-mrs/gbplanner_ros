@@ -42,6 +42,9 @@ class gbplanner_panel : public rviz::Panel {
  protected Q_SLOTS:
 
  protected:
+  std::string uav_name_;
+
+ protected:
   QPushButton* button_start_planner;
   ros::ServiceClient planner_client_start_planner;
 
