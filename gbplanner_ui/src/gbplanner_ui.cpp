@@ -47,14 +47,29 @@ gbplanner_panel::gbplanner_panel(QWidget* parent) : rviz::Panel(parent) {
   button_save_voxblox->setText("Save Voxblox");
   button_load_voxblox->setText("Load Voxblox");
 
-  v_box_layout->addWidget(button_start_planner);
-  v_box_layout->addWidget(button_stop_planner);
-  v_box_layout->addWidget(button_homing);
-  v_box_layout->addWidget(button_init_motion);
-  v_box_layout->addWidget(button_plan_to_waypoint);
-  v_box_layout->addWidget(button_save_voxgraph);
-  v_box_layout->addWidget(button_save_voxblox);
-  v_box_layout->addWidget(button_load_voxblox);
+  QGridLayout* grid_layout = new QGridLayout;
+  // Add buttons to the grid layout
+  grid_layout->addWidget(button_start_planner, 0, 0);
+  grid_layout->addWidget(button_stop_planner, 1, 0);
+  grid_layout->addWidget(button_homing, 2, 0);
+  grid_layout->addWidget(button_init_motion, 3, 0);
+  grid_layout->addWidget(button_plan_to_waypoint, 0, 1);
+  grid_layout->addWidget(button_save_voxgraph, 1, 1);
+  grid_layout->addWidget(button_save_voxblox, 2, 1);
+  grid_layout->addWidget(button_load_voxblox, 3, 1);
+
+  // v_box_layout->addWidget(button_start_planner);
+  // v_box_layout->addWidget(button_stop_planner);
+  // v_box_layout->addWidget(button_homing);
+  // v_box_layout->addWidget(button_init_motion);
+  // v_box_layout->addWidget(button_plan_to_waypoint);
+  // v_box_layout->addWidget(button_save_voxgraph);
+  // v_box_layout->addWidget(button_save_voxblox);
+  // v_box_layout->addWidget(button_load_voxblox);
+
+  // v_box_layout->addLayout(left_column_layout);
+  // v_box_layout->addLayout(right_column_layout);
+  v_box_layout->addLayout(grid_layout);
 
   QVBoxLayout* global_vbox_layout = new QVBoxLayout;
   QHBoxLayout* global_hbox_layout = new QHBoxLayout;
