@@ -72,6 +72,7 @@ class gbplanner_panel : public rviz::Panel {
   ros::ServiceClient planner_client_global_planner;
 
   QPushButton* button_save_voxgraph;
+  ros::ServiceClient planner_client_finalize_voxgraph;
   ros::ServiceClient planner_client_save_voxgraph;
 
   QPushButton* button_save_voxblox;
