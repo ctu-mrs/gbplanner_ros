@@ -100,22 +100,22 @@ gbplanner_panel::gbplanner_panel(QWidget* parent) : rviz::Panel(parent) {
 }
 
 void gbplanner_panel::on_save_voxgraph_click() {
-  std_srvs::Empty srv_empty;
-  if (planner_client_finalize_voxgraph.call(srv_empty)) {
-    voxblox_msgs::FilePath srv;
-    const std::string current_time = currentDateTime();
-    srv.request.file_path = voxgraph_save_path_ + "/button_voxgraph_" + current_time + ".ply";
-    ROS_INFO("[GBPLANNER-UI] Saving Voxgraph to file: %s", srv.request.file_path.c_str());
+  /* std_srvs::Empty srv_empty; */
+  /* if (planner_client_finalize_voxgraph.call(srv_empty)) { */
+  voxblox_msgs::FilePath srv;
+  const std::string current_time = currentDateTime();
+  srv.request.file_path = voxgraph_save_path_ + "/button_voxgraph_" + current_time + ".ply";
+  ROS_INFO("[GBPLANNER-UI] Saving Voxgraph to file: %s", srv.request.file_path.c_str());
 
-    if (!planner_client_save_voxgraph.call(srv)) {
-      ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_save_voxgraph.getService().c_str());
-    } else {
-      ROS_INFO("[GBPLANNER-UI] Voxgraph saved to file: %s", srv.request.file_path.c_str());
-    }
-
+  if (!planner_client_save_voxgraph.call(srv)) {
+    ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_save_voxgraph.getService().c_str());
   } else {
-    ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_finalize_voxgraph.getService().c_str());
+    ROS_INFO("[GBPLANNER-UI] Voxgraph saved to file: %s", srv.request.file_path.c_str());
   }
+
+  /* } else { */
+  /*   ROS_ERROR("[GBPLANNER-UI] Service call failed: %s", planner_client_finalize_voxgraph.getService().c_str()); */
+  /* } */
 }
 
 void gbplanner_panel::on_save_voxblox_click() {
